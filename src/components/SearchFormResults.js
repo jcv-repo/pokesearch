@@ -23,7 +23,7 @@ const SearchFormResults = ({ searchQuery, setSearchQuery }) => {
   const [pokemonSpeciesData, setPokemonSpeciesData] = useState(null);
   const [searchState, setSearchState] = useState("ready");
   const pokemonData = usePokemonDataContext();
-  const pendingTimeLimit = 7000;
+  const pendingTimeLimit = 12000;
 
   let selectedIndex = null;
   if (searchResults.haveResults) {
