@@ -1,15 +1,17 @@
 {
   "files": {
-    "main.css": "/pokesearch/static/css/main.3db9895c.css",
-    "main.js": "/pokesearch/static/js/main.f6650391.js",
-    "static/media/rick-and-morty-search-320.png": "/pokesearch/static/media/rick-and-morty-search-320.542417511b990cd1d997.png",
+    "main.css": "/pokesearch/static/css/main.e2583d84.css",
+    "main.js": "/pokesearch/static/js/main.8fe7af7f.js",
+    "static/media/Roboto-Regular.ttf": "/pokesearch/static/media/Roboto-Regular.fc2b5060f7accec5cf74.ttf",
+    "static/media/RobotoCondensed-Regular.ttf": "/pokesearch/static/media/RobotoCondensed-Regular.fc3d2f2e3a203d0037c1.ttf",
+    "static/media/RobotoCondensed-Bold.ttf": "/pokesearch/static/media/RobotoCondensed-Bold.c5fe6deebafaec078e64.ttf",
+    "static/media/add-icon.svg": "/pokesearch/static/media/add-icon.cba5e1fa24677462e7f366fb6cb86b50.svg",
     "index.html": "/pokesearch/index.html",
-    "static/media/search_icon.svg": "/pokesearch/static/media/search_icon.a33f109a6d55d1257394c99a0f0d8f27.svg",
-    "main.3db9895c.css.map": "/pokesearch/static/css/main.3db9895c.css.map",
-    "main.f6650391.js.map": "/pokesearch/static/js/main.f6650391.js.map"
+    "main.e2583d84.css.map": "/pokesearch/static/css/main.e2583d84.css.map",
+    "main.8fe7af7f.js.map": "/pokesearch/static/js/main.8fe7af7f.js.map"
   },
   "entrypoints": [
-    "static/css/main.3db9895c.css",
-    "static/js/main.f6650391.js"
+    "static/css/main.e2583d84.css",
+    "static/js/main.8fe7af7f.js"
   ]
 }
