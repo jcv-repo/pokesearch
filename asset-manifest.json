@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.css": "/pokesearch/static/css/main.e2c8f60a.css",
-    "main.js": "/pokesearch/static/js/main.6ddb982e.js",
+    "main.css": "/pokesearch/static/css/main.74aa19e5.css",
+    "main.js": "/pokesearch/static/js/main.82442aff.js",
     "static/media/Roboto-Regular.ttf": "/pokesearch/static/media/Roboto-Regular.fc2b5060f7accec5cf74.ttf",
     "static/media/RobotoCondensed-Regular.ttf": "/pokesearch/static/media/RobotoCondensed-Regular.fc3d2f2e3a203d0037c1.ttf",
     "static/media/RobotoCondensed-Bold.ttf": "/pokesearch/static/media/RobotoCondensed-Bold.c5fe6deebafaec078e64.ttf",
     "static/media/add-icon.svg": "/pokesearch/static/media/add-icon.cba5e1fa24677462e7f366fb6cb86b50.svg",
     "index.html": "/pokesearch/index.html",
-    "main.e2c8f60a.css.map": "/pokesearch/static/css/main.e2c8f60a.css.map",
-    "main.6ddb982e.js.map": "/pokesearch/static/js/main.6ddb982e.js.map"
+    "main.74aa19e5.css.map": "/pokesearch/static/css/main.74aa19e5.css.map",
+    "main.82442aff.js.map": "/pokesearch/static/js/main.82442aff.js.map"
   },
   "entrypoints": [
-    "static/css/main.e2c8f60a.css",
-    "static/js/main.6ddb982e.js"
+    "static/css/main.74aa19e5.css",
+    "static/js/main.82442aff.js"
   ]
 }
