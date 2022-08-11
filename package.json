@@ -8,10 +8,12 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
+    "dexie": "^3.2.2",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-router-dom": "5.3.3",
     "react-scripts": "5.0.1",
+    "react-select": "^5.3.2",
     "web-vitals": "^2.1.0"
   },
   "scripts": {
@@ -21,6 +23,15 @@
     "eject": "react-scripts eject",
     "predeploy": "react-scripts build",
     "deploy": "gh-pages -d build"
+  },
+  "imports": {
+    "#app/*": "./src/app/*",
+    "#assets/*": "./src/assets/*",
+    "#components/*": "./src/components/*",
+    "#data/*": "./src/data/*",
+    "#shared-ui/*": "./src/shared-ui/*",
+    "#ui/*": "./src/ui/*",
+    "#utils/*": "./src/utils/*"
   },
   "eslintConfig": {
     "extends": [

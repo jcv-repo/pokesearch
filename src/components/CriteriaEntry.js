@@ -1,4 +1,4 @@
-import toTitleCase from "../helpers/toTitleCase";
+import toTitleCase from "#utils/toTitleCase";
 
 const CriteriaEntry = ({ match, category }) => (
   <div
