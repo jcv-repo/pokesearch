@@ -1,13 +1,14 @@
-export const ModalGenerationLabel = ({ generation, setSelectedValues }) => {
+export const ModalGenerationLabel = ({
+  generation,
+  setSelectedValues,
+  className = "",
+}) => {
   const handleClick = () => {
     setSelectedValues(generation);
   };
   return (
-    <li
-      onClick={handleClick}
-      className="flex grow-0 shrink-0 basis-4/12 content-center justify-center list-none mb-2"
-    >
-      {generation}
+    <li onClick={handleClick} className={`list-none mb-2 ${className}`}>
+      {`Generation ${generation}`}
     </li>
   );
 };

@@ -1,34 +1,48 @@
 import { useState, useEffect } from "react";
-import { useAppContext } from "./context";
-import { AppNotice } from "./components/AppNotice";
 
-export const AppOverlay = () => {
-  const timeCapBeforeDisplayingInfo = 2000;
-  const [showInfo, setShowInfo] = useState(false);
-  const { appState } = useAppContext();
+export const AppOverlay = ({ appState }) => {
+  const timeCapBeforeDisplayingInfo = 10;
+  const [shouldShowInfo, setShouldShowInfo] = useState(false);
 
   useEffect(() => {
-    console.log("app status ", appState.status);
-    if (appState.shouldGiveUserConsent) {
-      switch (appState.status) {
-        case "waiting":
-          //setTimeout(() => {
-          //if (appState.status === "waiting") {
-          setShowInfo(true);
-          //}
-          //}, timeCapBeforeDisplayingInfo);
-          break;
-
-        case "error":
-          setShowInfo(true);
-          break;
-      }
+    if (appState.status === "ready") {
+      setShouldShowInfo(false);
+      return;
     }
-  }, [appState.status]);
+    if (!appState.shouldGiveUserConsent) {
+      return;
+    }
+
+    let waitSetMessage;
+
+    switch (appState.status) {
+      case "waiting":
+        waitSetMessage = setTimeout(() => {
+          setShouldShowInfo(true);
+        }, timeCapBeforeDisplayingInfo);
+
+        break;
+
+      case "error":
+        setShouldShowInfo(true);
+        break;
+    }
+
+    return () => {
+      clearTimeout(waitSetMessage);
+    };
+  }, [appState]);
 
   return (
-    <div id="app-overlay" className="fixed">
-      {showInfo && <AppNotice message={appState.message} />}
-    </div>
+    <>
+      {shouldShowInfo === true && appState.status !== "ready" && (
+        <div
+          id="status-overlay"
+          className="fixed left-1/2 bottom-4 transform translate-x-[-50%] z-40 px-4 py-2 rounded-md bg-on-tertiary text-tertiary-color"
+        >
+          <div className="bottom-4 mx-auto">{appState.message}</div>
+        </div>
+      )}
+    </>
   );
 };

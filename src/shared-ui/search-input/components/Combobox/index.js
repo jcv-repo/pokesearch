@@ -53,8 +53,7 @@ export const Combobox = ({
   //
 
   const getFormattedValue = (category, match) => ({
-    value: `${category}:${match}`,
-    label: toTitleCase(match),
+    match: toTitleCase(match),
     category: toTitleCase(category),
   });
 
@@ -134,6 +133,11 @@ export const Combobox = ({
         inputValue={inputValue}
         onInputChange={inputCallback}
         options={suggestions}
+        getOptionValue={(options) =>
+          `${options.category.toLowerCase()}:${options.match.toLowerCase()}`
+        }
+        getOptionLabel={(options) => options.match}
+        filterOptions={() => true}
         value={selection}
         onChange={handleSelectionChange}
         isLoading={isLoading}

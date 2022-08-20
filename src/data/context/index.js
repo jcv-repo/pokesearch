@@ -38,30 +38,54 @@ const PokemonDataContextProvider = ({ children }) => {
   );
 
   const {
-    fetching,
+    getFetching,
     findIndexInFetchState,
     addToFetchState,
     removeFromFetchState,
   } = useFetching();
-
+  const isStoreRoutineBusy = useRef(false);
   const firstSetup = useRef(true);
 
   //
   // Helpers
   //
 
+  const doStoreInDatabaseRoutine = async () => {
+    const fetching = getFetching();
+
+    if (fetching.length === 0) {
+      return;
+    }
+
+    if (!isStoreRoutineBusy.current) {
+      isStoreRoutineBusy.current = true;
+
+      const promises = await Promise.all(
+        fetching.map(({ promise }) => promise)
+      );
+
+      isStoreRoutineBusy.current = false;
+
+      const wasSuccessful = promises.every(({ ok }) => ok);
+
+      if (wasSuccessful) {
+        if (getFetching().length > 0) {
+          doStoreInDatabaseRoutine();
+        }
+      }
+    }
+  };
+
   const storeData = (data, category, params = null) => {
-    pokemonData.current[category][
-      params ? params : config.listOfCategoryKeyword
-    ] = data;
-    storeInDatabase(data, category, params);
+    pokemonData.current[category][params || config.listOfCategoryKeyword] =
+      data;
+    // storeInDatabase(data, category, params);
   };
 
   const isDataStored = (category, params) =>
-    (params ? params : config.listOfCategoryKeyword) in
-    pokemonData.current[category];
+    (params || config.listOfCategoryKeyword) in pokemonData.current[category];
 
-  const getData = async (category, params) => {
+  const getData = (category, params) => {
     //
     //
     //
@@ -74,24 +98,23 @@ const PokemonDataContextProvider = ({ children }) => {
     //
     //
 
-    if (isDataStored(category, params)) {
-      return pokemonData.current[category][
-        params ? params : config.listOfCategoryKeyword
-      ];
-    }
-
-    const databaseRequest = await getFromDatabase(
-      category,
-      params ? params : null
+    return (
+      pokemonData.current[category][params || config.listOfCategoryKeyword] ||
+      null
     );
 
-    if (databaseRequest) {
-      pokemonData.current[category][
-        params ? params : config.listOfCategoryKeyword
-      ] = databaseRequest;
-    }
+    // const databaseRequest = await getFromDatabase(
+    //   category,
+    //   params || null
+    // );
 
-    return databaseRequest;
+    // if (databaseRequest) {
+    //   pokemonData.current[category][
+    //     params || config.listOfCategoryKeyword
+    //   ] = databaseRequest;
+    // }
+
+    // return databaseRequest;
   };
 
   //
@@ -108,9 +131,7 @@ const PokemonDataContextProvider = ({ children }) => {
 
     const isParamsEmpty = params === null;
 
-    if (
-      isParamsEmpty ? !isDataStored(category) : !isDataStored(category, params)
-    ) {
+    if (!isDataStored(category, isParamsEmpty ? null : params)) {
       const requestID = isParamsEmpty ? category : `${category}-${params}`;
       const indexOfFetchState = findIndexInFetchState(requestID);
 
@@ -124,7 +145,7 @@ const PokemonDataContextProvider = ({ children }) => {
         //
         //
 
-        const result = await fetching.current[indexOfFetchState].promise;
+        const result = await getFetching()[indexOfFetchState].promise;
         return getRequestObject(result);
       }
 
@@ -139,31 +160,16 @@ const PokemonDataContextProvider = ({ children }) => {
       removeFromFetchState(requestID);
 
       if (results.ok) {
-        //
-        //
-        // TODO
-        // add to database with storeData(), not like this
-        //
-        //
-        isParamsEmpty
-          ? storeData(results.results, category)
-          : storeData(results.results, category, params);
+        storeData(results.results, category, isParamsEmpty ? null : params);
       } else {
         return getRequestObject(results); // return error
       }
     }
 
-    if (isParamsEmpty) {
-      return getRequestObject({
-        status: 200,
-        results: pokemonData.current[category][config.listOfCategoryKeyword],
-      });
-    } else {
-      return getRequestObject({
-        status: 200,
-        results: pokemonData.current[category][params],
-      });
-    }
+    return getRequestObject({
+      status: 200,
+      results: getData(category, isParamsEmpty ? null : params),
+    });
   };
 
   //
@@ -198,6 +204,8 @@ const PokemonDataContextProvider = ({ children }) => {
       }
     }
 
+    doStoreInDatabaseRoutine();
+
     return getRequestObject({ status: lastFetchStatus, results: results });
   };
 
@@ -220,11 +228,10 @@ const PokemonDataContextProvider = ({ children }) => {
           //
           //
 
-          await getData(category);
+          getData(category);
 
           if (!isDataStored(category)) {
             const data = await requestPokemonData(category);
-            storeData(data.results, category);
           }
         }
         console.log("ok", pokemonData);

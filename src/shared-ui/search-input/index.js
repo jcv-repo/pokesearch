@@ -199,7 +199,7 @@ export const SearchInput = ({
             options={config.addMenu}
             callback={setModal}
             isLoading={!isReady}
-            className={"relative"}
+            className="relative"
           />
           <Combobox
             data={isReady ? categoryData.current : null}
@@ -213,7 +213,7 @@ export const SearchInput = ({
             placeholder={config.placeholderMessage}
             loadingMessage={config.loadingMessage}
             noMatchesMessage={config.noMatchesMessage}
-            className={`w-full`}
+            className="w-full"
           />
         </div>
         <div

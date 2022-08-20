@@ -8,7 +8,7 @@ export const Modal = ({
   title,
   description,
   callback,
-  contentRef,
+  shouldContentScroll = true,
   showDoneButton = true,
   showCancelButton = true,
 }) => (
@@ -55,24 +55,24 @@ export const Modal = ({
               )}
 
               {typeof description === "string" && (
-                <p className="mb-8 text-sm text-gray-500">{description}</p>
+                <p className="mb-4 text-sm text-gray-500">{description}</p>
               )}
 
               <div
-                ref={contentRef}
-                className="flex flex-wrap grow justify-center overflow-y-scroll
-                  mb-4"
+                className={`flex flex-col grow justify-center mb-4 ${
+                  shouldContentScroll ? "overflow-scroll" : "overflow-hidden"
+                }`}
               >
                 {children}
               </div>
 
               {(showCancelButton || showDoneButton) && (
-                <div className="flex flex-row justify-center">
+                <div className="flex flex-row justify-center ml-auto">
                   {showCancelButton && (
                     <button
                       type="button"
                       onClick={toggle}
-                      className="inline-block px-4 py-2 rounded-md border 
+                      className="inline-block px-4 py-2 mr-2 rounded-md border 
                           border-transparent bg-blue-100 text-sm font-medium 
                           text-blue-900 hover:bg-blue-200 focus:outline-none 
                           focus-visible:ring-2 focus-visible:ring-blue-500 

@@ -1,3 +1,5 @@
+import { toTitleCase } from "#utils/toTitleCase";
+
 export const ModalAbilityLabel = ({
   ability,
   setSelectedValues,
@@ -7,8 +9,10 @@ export const ModalAbilityLabel = ({
     setSelectedValues(ability);
   };
   return (
-    <li key={`ability-${ability}`} onClick={handleClick} className={className}>
-      {ability}
+    <li key={`ability-${ability}`} className={className}>
+      <button onClick={handleClick}>
+        {toTitleCase(ability).replaceAll("-", " ")}
+      </button>
     </li>
   );
 };

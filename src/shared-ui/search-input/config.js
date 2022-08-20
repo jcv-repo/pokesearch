@@ -1,6 +1,6 @@
 import { ModalAddType } from "#shared-ui/modals/ModalAddType";
 import { ModalAddAbility } from "#shared-ui/modals/ModalAddAbility";
-import { ModalAddGeneration } from "#shared-ui/modals/ModalAddGeneration";
+// import { ModalAddGeneration } from "#shared-ui/modals/ModalAddGeneration";
 
 export const config = {
   maxSuggestionCount: 8,
@@ -12,10 +12,10 @@ export const config = {
   noMatchesMessage: "Nothing found, try something different",
 
   categories: [
-    // { name: "pokemon" },
+    // { name: "pokemon", priority: "top", selectable: false },
     { name: "type", maxAllowed: 2 },
     { name: "ability" },
-    { name: "generation" },
+    // { name: "generation" },
   ],
 
   addMenu: [
@@ -29,10 +29,12 @@ export const config = {
       label: "Add Ability",
       dialog: ModalAddAbility,
     },
+    /*
     {
       category: "generation",
       label: "Add Generation",
       dialog: ModalAddGeneration,
     },
+    */
   ],
 };

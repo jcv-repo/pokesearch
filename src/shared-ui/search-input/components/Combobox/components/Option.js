@@ -5,8 +5,8 @@ export const optionStyles = ({ padding, ...provided }, state) => ({
 });
 
 export const Option = ({ data, ...props }) => (
-  <components.Option {...props} className="px-4 py-1.5">
+  <components.Option {...props} className="px-4 py-1">
     <span className="inline-block mr-1 text-slate-500">{data.category}</span>
-    <span>{data.label}</span>
+    <span>{data.match}</span>
   </components.Option>
 );

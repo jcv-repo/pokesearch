@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext } from "react";
+import { AppOverlay } from "../";
 
 const AppContext = createContext();
 
@@ -27,57 +28,61 @@ const AppContextProvider = ({ children }) => {
       throw new Error(`${params} must be an object with valid parameters`);
     }
 
-    let newState = appState;
+    let newState = {};
 
     for (const key in params) {
-      if (params.hasOwnProperty(key)) {
-        const value = params[key];
-
-        if (validStateParams.indexOf(key) !== -1) {
-          // Some validation before updating
-          switch (key) {
-            case "status":
-              const validStateKeys = ["ready", "busy", "waiting", "error"];
-              if (validStateKeys.indexOf(value) === -1) {
-                throw new Error(`The status of the app cannot be ${value}`);
-              }
-              break;
-
-            case "message":
-              if (typeof value !== "string") {
-                throw new Error(
-                  `The app's status message can only be a string. It was passed ${value}`
-                );
-              }
-              break;
-
-            case "shouldGiveUserConsent":
-              if (typeof value !== "boolean") {
-                throw new Error(
-                  `shouldGiveUserConsent can only be a boolean. It was passed ${value}`
-                );
-              }
-              break;
-
-            default:
-              break;
-          }
-
-          newState = { ...newState, value };
-        } else {
-          console.warn(
-            `${key} is not a valid parameter for the app's status, but it just has been ignored`
-          );
-        }
+      if (!params.hasOwnProperty(key)) {
+        continue;
       }
+
+      if (!validStateParams.includes(key)) {
+        console.warn(
+          `${key} is not a valid parameter for the app's status, but it just has been ignored`
+        );
+        continue;
+      }
+
+      const value = params[key];
+
+      // Some validation before updating
+      switch (key) {
+        case "status":
+          const validStateKeys = ["ready", "busy", "waiting", "error"];
+          if (!validStateKeys.includes(value)) {
+            throw new Error(`The status of the app cannot be ${value}`);
+          }
+          break;
+
+        case "message":
+          if (typeof value !== "string") {
+            throw new Error(
+              `The app's status message can only be a string. It was passed ${value}`
+            );
+          }
+          break;
+
+        case "shouldGiveUserConsent":
+          if (typeof value !== "boolean") {
+            throw new Error(
+              `shouldGiveUserConsent can only be a boolean. It was passed ${value}`
+            );
+          }
+          break;
+
+        default:
+          break;
+      }
+
+      newState[key] = value;
     }
 
-    setAppState({ ...defaultState, newState });
+    setAppState({ ...defaultState, ...newState });
   };
 
   return (
     <AppContext.Provider value={{ appState, changeAppState }}>
-      {children}
+      <AppOverlay appState={appState} />
+      <div id="app">{children}</div>
     </AppContext.Provider>
   );
 };

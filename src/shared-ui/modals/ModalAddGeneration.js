@@ -13,7 +13,7 @@ export const ModalAddGeneration = ({
 
   const applyChangesAndClose = () => {
     if (typeof callback === "function") {
-      callback({ generation: selectedValues });
+      callback({ generation: [selectedValues] });
     }
     toggle();
   };
@@ -42,7 +42,7 @@ export const ModalAddGeneration = ({
       description={"Select one generation of Pokemon"}
       callback={applyChangesAndClose}
     >
-      <ol className="flex flex-wrap content-center justify-center mt-8">
+      <ol className="flex flex-col flex-wrap content-center justify-center">
         {dataList.map((generation, index) => {
           const isDisabled = selectedValues && selectedValues !== generation;
           const isSelected = selectedValues && selectedValues === generation;
@@ -52,6 +52,7 @@ export const ModalAddGeneration = ({
               key={`generation-${generation}`}
               generation={generation}
               setSelectedValues={setSelectedValues}
+              className={isSelected && `text-red-400`}
             />
           );
         })}

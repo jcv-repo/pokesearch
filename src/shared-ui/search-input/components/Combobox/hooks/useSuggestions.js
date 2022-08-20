@@ -1,28 +1,23 @@
 import { useRef } from "react";
-import { findStringFromArrayWithLimit } from "#utils/findStringFromArrayWithLimit";
+import { cleanString } from "#utils/cleanString";
 
 export const useSuggestions = (data, input, options, maxSuggestionCount) => {
   const suggestions = useRef([]);
   const suggestionTarget = useRef(input);
 
-  const cleanInput = input.toLowerCase();
+  const cleanInput = cleanString(input);
 
-  // what are the suggestions:
-  // we only gonna return the firsts results in each category
-  // in case that there is more than the maximum amount of suggestions allowed
-  // we gonna equally show the same amount of matches for each category
-  //            (if dividing the categories is odd,
-  //                categories declared first on the fetch get prioritized)
   //
-  //              ... just a whatever algorithm to fill in here for the moment
-
+  //
   // TODO : settimeouts para no sobrecargar el cpu, esperar que el usuario
   //        deje de escribir
+  //
+  //
 
   const findSuggestions = () => {
     let results = [];
 
-    if (cleanInput.trim().length === 0) {
+    if (cleanInput.length === 0) {
       suggestions.current = [];
       suggestionTarget.current = "";
       return results;
@@ -31,7 +26,7 @@ export const useSuggestions = (data, input, options, maxSuggestionCount) => {
     const suggestTargetSize = suggestionTarget.current.length;
     if (
       suggestions.current.length === 0 &&
-      cleanInput.trim().length > 1 &&
+      cleanInput.length > 1 &&
       suggestionTarget.current.slice(0, suggestTargetSize) ===
         cleanInput.slice(0, suggestTargetSize)
     ) {
@@ -39,35 +34,97 @@ export const useSuggestions = (data, input, options, maxSuggestionCount) => {
     }
 
     //
-    //
+    // Find matches
     //
 
     let listsOfSuggestions = [];
-    for (const entry of options) {
-      const matches = findStringFromArrayWithLimit(
-        data[entry.name],
-        cleanInput.trim(),
-        maxSuggestionCount
-      );
+
+    for (const category of options) {
+      let matches = {
+        // Priorities
+        high: [],
+        low: [],
+      };
+
+      for (const item of data[category.name]) {
+        if (matches.high.length >= maxSuggestionCount) {
+          break;
+        }
+
+        const cleanItem = cleanString(item);
+
+        // Lowest priority matching first
+        if (cleanItem.includes(cleanInput)) {
+          // Check if it's high priority then
+          const isHighPriority = cleanItem.startsWith(cleanInput);
+
+          if (isHighPriority) {
+            matches.high.push(item);
+          } else {
+            if (
+              // lil optimese
+              matches.high.length + matches.low.length <=
+              maxSuggestionCount
+            ) {
+              matches.low.push(item);
+            }
+          }
+        }
+      }
+
       if (matches.length !== 0) {
-        listsOfSuggestions.push({ category: entry.name, matches: matches });
+        listsOfSuggestions.push({
+          category: category.name,
+          matches: { high: matches.high, low: matches.low },
+        });
       }
     }
 
-    const criteriaCount = listsOfSuggestions.length;
-    const accumulatedSum = (index) =>
-      Math.round((index / criteriaCount) * maxSuggestionCount);
+    //
+    // Formatting matches
+    //
 
-    for (let i = 0; i < criteriaCount; i++) {
-      const suggestionsCount = accumulatedSum(i + 1) - accumulatedSum(i);
-      const matchList = listsOfSuggestions[i];
+    const sortSuggestionsByLength = (priority) => {
+      listsOfSuggestions.sort(({ matches: a }, { matches: b }) => {
+        if (a[priority].length > b[priority].length) {
+          return 1;
+        }
+        if (a[priority].length < b[priority].length) {
+          return -1;
+        }
+        return 0;
+      });
+    };
 
-      results.push(
-        ...matchList.matches
-          .slice(0, suggestionsCount)
-          .map((match) => ({ category: matchList.category, match: match }))
-      );
+    const categoryCount = listsOfSuggestions.length;
+
+    const addToResults = (priority) => {
+      sortSuggestionsByLength(priority);
+
+      for (let i = 0; i < categoryCount; i++) {
+        const maxCategorySuggestions = Math.round(
+          (1 / (categoryCount - i)) * (maxSuggestionCount - results.length)
+        );
+        const matchList = listsOfSuggestions[i];
+
+        if (maxCategorySuggestions > 0) {
+          results.push(
+            ...matchList.matches[priority]
+              .slice(0, maxCategorySuggestions)
+              .map((match) => ({ category: matchList.category, match: match }))
+          );
+        }
+      }
+    };
+
+    addToResults("high");
+    if (maxSuggestionCount > results.length) {
+      addToResults("low");
     }
+
+    //
+    //
+    //
 
     suggestions.current = results;
     suggestionTarget.current = cleanInput;

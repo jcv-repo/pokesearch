@@ -10,23 +10,19 @@ export const getFromDatabase = async (category, params) => {
       throw new TypeError(`${category} is not a string`);
     }
   }
-  /*
-  console.log(`the database`, database.pokemonData);
-  console.log(
-    `what is ${params ? params : genericParamKeyword} in ${category}`
-  );
 
-  const asdf = await database.pokemonData.get(category);
-  console.log(`${category} is`, asdf);
+  const cleanCategory = category.replaceAll("-", "");
+  const cleanParams = (params || "").replaceAll("-", "");
 
   const data = await database.pokemonData
-    .where(category)
-    .equals(params ? params : genericParamKeyword)
+    .where(cleanCategory)
+    .equals(params ? cleanParams : genericParamKeyword)
     .toArray();
-  console.log(`the ${category} data from database`, data);
+
+  console.log(data, category, params ? cleanParams : genericParamKeyword);
   if (data && data.length > 0) {
+    console.log(`HEY returned ${params} in ${category}`);
     return data[0];
   }
-  */
   return null;
 };

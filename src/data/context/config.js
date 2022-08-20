@@ -1,11 +1,5 @@
 export const config = {
-  availableData: [
-    "pokemon",
-    "pokemon-species",
-    "type",
-    "ability",
-    "generation",
-  ],
+  availableData: ["pokemon", "pokemon-species", "type", "ability"],
 
   shouldPreload: true,
 

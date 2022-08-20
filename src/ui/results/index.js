@@ -1,9 +1,9 @@
 // React
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 // Components
 import { Header } from "./components/Header";
-import { PokemonBox } from "./components/PokemonBox2";
-import { PokemonItem } from "./components/PokemonItem";
+import { PokemonBox } from "./components/PokemonBox";
+import { ListOfPokemon } from "./components/ListOfPokemon";
 import { useAppContext } from "#app/context";
 import { usePokemonDataContext } from "#data/context";
 // Utils & helpers
@@ -11,6 +11,7 @@ import { getDeconstructedSearch } from "#utils/getDeconstructedSearch";
 import { matchArrays } from "#utils/matchArrays";
 import { getStateErrorMessageWithStatus } from "#app/helpers/getStateErrorMessageWithStatus";
 import { extractDataListPokemonIDs } from "#data/api/utils/extractDataListPokemonIDs";
+import { getSpeciesFromPokemon } from "#data/api/utils/getSpeciesFromPokemon";
 
 //
 //
@@ -37,8 +38,9 @@ export const SearchResults = ({
     results: [],
   });
   const [resultsData, setResultsData] = useState({
-    query: null,
-    id: null,
+    pokemon: {},
+    species: {},
+    availableQuery: [],
     areQueryResultsCompleted: true,
   });
   const { searchState, changeAppState } = useAppContext();
@@ -47,12 +49,8 @@ export const SearchResults = ({
   // Other variables
   //
 
+  const isLoadingData = useRef({ pokemon: false, species: false });
   const requestPokemonData = usePokemonDataContext();
-  const selectedIndex = resultsData.query
-    ? resultsData.query.findIndex(
-        ({ id: pokemonID }) => Number(searchQuery.id) === pokemonID
-      )
-    : -1;
 
   //
   // Utils
@@ -74,42 +72,93 @@ export const SearchResults = ({
     return request.results;
   };
 
+  const setData = (data = {}, shouldAdd = {}) => {
+    setResultsData((prevState) => {
+      const pokemonData = shouldAdd.pokemon
+        ? { ...prevState.pokemon, ...(data.pokemon || {}) }
+        : data.pokemon || prevState.pokemon;
+      const speciesData = shouldAdd.species
+        ? { ...prevState.species, ...(data.species || {}) }
+        : data.species || prevState.species;
+
+      if (data.pokemon) {
+        setIsLoadingData(false, "pokemon");
+      }
+      if (data.species) {
+        setIsLoadingData(false, "species");
+      }
+
+      return {
+        pokemon: pokemonData,
+        species: speciesData,
+        availableQuery: Object.keys(pokemonData).filter((pokemon) =>
+          queryResults.results.includes(pokemon)
+        ),
+        areQueryResultsCompleted: queryResults.results.every(
+          (result) => pokemonData[result] !== undefined
+        ),
+      };
+    });
+  };
+
+  const setIsLoadingData = (isLoading, typeOfData = "both") => {
+    const isPokemonLoading =
+      typeOfData === "pokemon" || typeOfData === "both"
+        ? isLoading
+        : isLoadingData.current.pokemon;
+
+    const isSpeciesLoading =
+      typeOfData === "species" || typeOfData === "both"
+        ? isLoading
+        : isLoadingData.current.species;
+
+    isLoadingData.current = {
+      pokemon: isPokemonLoading,
+      species: isSpeciesLoading,
+    };
+  };
+
   //
   // Callbacks
   //
 
-  const setID = (id) => {
+  const setId = (id) => {
     setSearchQuery({ query: searchQuery.query, id: id });
   };
 
   const loadMoreResults = async () => {
-    if (resultsData.areItemsCompleted) {
+    if (resultsData.areQueryResultsCompleted) {
       console.warn(
         "The search results are fully displayed and there is nothing more to add"
       );
       return;
     }
 
+    if (isLoadingData.current.pokemon === true) {
+      return;
+    }
+
+    setIsLoadingData(true, "pokemon");
     changeAppState({
       status: "busy",
       message: "Adding more results",
       shouldGiveUserConsent: true,
     });
 
-    const currentDataSize = resultsData.query.length;
-    const results = await getRequest(
-      "pokemon",
-      queryResults.results.slice(currentDataSize, currentDataSize + pageSize)
+    const results = {};
+    const currentDataSize = resultsData.availableQuery.length;
+    const nextRequest = queryResults.results.slice(
+      currentDataSize,
+      currentDataSize + pageSize
     );
 
-    setResultsData((prevState) => ({
-      ...prevState,
-      query: [...prevState.query, ...results],
-      areQueryResultsCompleted:
-        currentDataSize + results.length >= queryResults.results.length,
-    }));
+    const request = await getRequest("pokemon", nextRequest);
+    nextRequest.forEach((pokemon, index) => {
+      results[pokemon] = request[index];
+    });
 
     changeAppState({ status: "ready" });
+    setData({ pokemon: results }, { pokemon: true });
   };
 
   //
@@ -117,7 +166,7 @@ export const SearchResults = ({
   //
 
   useEffect(() => {
-    const requestAndFindQueryResults = async () => {
+    const findQueryResults = async () => {
       let results;
 
       if (searchQuery.query) {
@@ -156,12 +205,12 @@ export const SearchResults = ({
       });
     };
 
-    requestAndFindQueryResults();
+    findQueryResults();
   }, [searchQuery.query]);
 
   useEffect(() => {
-    const requestAndUpdateQueryData = async () => {
-      let results;
+    const updatePokemonData = async () => {
+      let results = {};
 
       if (queryResults.haveResults) {
         changeAppState({
@@ -169,50 +218,52 @@ export const SearchResults = ({
           message: "Fetching search results...",
         });
 
-        results = await getRequest(
-          "pokemon",
-          queryResults.results.slice(0, pageSize)
-        );
+        const initialRequest = queryResults.results.slice(0, pageSize);
+        const request = await getRequest("pokemon", initialRequest);
+
+        initialRequest.forEach((pokemon, index) => {
+          results[pokemon] = request[index];
+        });
 
         changeAppState({ status: "ready" });
       }
 
-      setResultsData((prevState) => ({
-        ...prevState,
-        query: results ? results : null,
-        areQueryResultsCompleted: results
-          ? results.length >= queryResults.results.length
-          : true,
-      }));
+      setData({ pokemon: results });
     };
 
-    requestAndUpdateQueryData();
+    updatePokemonData();
   }, [queryResults.query]);
 
   useEffect(() => {
-    const setNewIDResults = (results) => {
-      setResultsData((prevState) => ({
-        ...prevState,
-        id: results,
-      }));
-    };
-    const requestAndUpdateIDData = async () => {
-      let results;
-      results = (await getRequest("pokemon-species", [searchQuery.id]))[0];
+    const updateSpeciesData = async () => {
+      setIsLoadingData(true, "species");
 
-      setNewIDResults(results ? results : null);
+      const storedPokemonId = resultsData.pokemon[searchQuery.id];
+
+      let pokemonRequest;
+      if (!storedPokemonId) {
+        pokemonRequest = (await getRequest("pokemon", [searchQuery.id]))[0];
+      }
+
+      let speciesRequest = (
+        await getRequest("pokemon-species", [
+          getSpeciesFromPokemon(storedPokemonId || pokemonRequest),
+        ])
+      )[0];
+
+      const results = {};
+      results.pokemon = storedPokemonId
+        ? {}
+        : { [searchQuery.id]: pokemonRequest };
+      results.species = { [searchQuery.id]: speciesRequest };
+
+      setData(results, { pokemon: true });
     };
 
     if (searchQuery.id) {
-      requestAndUpdateIDData();
-    } else {
-      if (resultsData.id) {
-        setNewIDResults(null);
-      }
+      updateSpeciesData();
     }
   }, [searchQuery.id]);
-
-  console.log("results render");
 
   //
   //
@@ -234,49 +285,33 @@ export const SearchResults = ({
           {searchQuery.query ? (
             queryResults.haveResults ? (
               <>
-                {resultsData.query && searchQuery.id && (
-                  <div className="lg:w-10/12 lg:mx-auto mb-24">
-                    <PokemonBox
-                      pokemon={resultsData.query[selectedIndex]}
-                      pokemonSpecies={resultsData.id}
-                      onClose={setID}
-                      shouldScroll={true}
-                    />
-                  </div>
+                {searchQuery.id && (
+                  <PokemonBox
+                    pokemon={resultsData.pokemon[searchQuery.id]}
+                    pokemonSpecies={resultsData.species[searchQuery.id]}
+                    onClose={setId}
+                    shouldScroll={true}
+                    className={"lg:w-10/12 lg:mx-auto mb-24"}
+                  />
                 )}
-                <ul className="flex flex-wrap">
-                  {resultsData.query &&
-                    resultsData.query.map((pokemon, index) => (
-                      <React.Fragment key={`pokemon-${index}`}>
-                        {selectedIndex !== index && (
-                          <li
-                            id={
-                              selectedIndex === index ? "selected-result" : null
-                            }
-                            className="basis-full sm:basis-6/12 mb-8"
-                          >
-                            <article>
-                              <PokemonItem
-                                pokemon={pokemon}
-                                index={index}
-                                searchQuery={searchQuery}
-                                setSearchQuery={setSearchQuery}
-                                onClick={setID}
-                              />
-                            </article>
-                          </li>
-                        )}
-                      </React.Fragment>
-                    ))}
-                  {!resultsData.areQueryResultsCompleted && (
-                    <button onClick={loadMoreResults}>See More</button>
-                  )}
-                </ul>
+                <ListOfPokemon
+                  queryResults={queryResults.results}
+                  pokemonData={resultsData.pokemon}
+                  availableQuery={resultsData.availableQuery}
+                  isLoadingPokemon={isLoadingData.current.pokemon}
+                  areQueryResultsCompleted={
+                    resultsData.areQueryResultsCompleted
+                  }
+                  queryId={searchQuery.id}
+                  setIdCallback={setId}
+                  pageSize={pageSize}
+                  loadMoreCallback={loadMoreResults}
+                  loadMoreMessage="See more"
+                  className="flex flex-wrap"
+                />
               </>
-            ) : searchState === "ready" ? (
-              <div className="g-message"></div>
             ) : (
-              <span> Loading </span>
+              "i think no results bro"
             )
           ) : (
             "No search has been made yet"

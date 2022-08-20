@@ -11,7 +11,7 @@ const createDatabase = (initialCategories) => {
   }
 
   database.version(1).stores({
-    pokemonData: initialCategories.join(),
+    pokemonData: initialCategories.join().replaceAll("-", ""),
   });
 };
 

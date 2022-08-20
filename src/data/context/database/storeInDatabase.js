@@ -19,13 +19,16 @@ export const storeInDatabase = async (data, category, params = null) => {
     database.pokemonData.clear();
   }
 
-  const paramsKey = params ? params : genericParamKeyword;
+  const cleanCategory = category.replaceAll("-", "");
+  const cleanParams = params ? params.replaceAll("-", "") : genericParamKeyword;
+
   database.pokemonData
     .add({
-      [category]: paramsKey,
+      [cleanCategory]: cleanParams,
       data,
     })
     .then(() => {
+      console.log(`added ${params} in ${category}`);
       // mommy milkers
     })
     .catch(() => {
