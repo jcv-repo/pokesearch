@@ -1,28 +1,32 @@
-import { database, genericParamKeyword } from "./db";
+import { database } from "./db";
 
-export const getFromDatabase = async (category, params) => {
-  if (typeof category !== "string") {
-    if (category === undefined) {
-      throw new Error(
-        "Missed first argument, it must be a string with the corresponding data category"
-      );
-    } else {
-      throw new TypeError(`${category} is not a string`);
-    }
-  }
+// please
+// fix
 
-  const cleanCategory = category.replaceAll("-", "");
-  const cleanParams = (params || "").replaceAll("-", "");
+export const getFromDatabase = async () => {
+  // if (typeof category !== "string") {
+  //   if (category === undefined) {
+  //     throw new Error(
+  //       "Missed first argument, it must be a string with the corresponding data category"
+  //     );
+  //   } else {
+  //     throw new TypeError(`${category} is not a string`);
+  //   }
+  // }
+
+  // const cleanCategory = category.replaceAll("-", "");
+
+  //
+  // gonna ???????????????? all day long
+  //
 
   const data = await database.pokemonData
-    .where(cleanCategory)
-    .equals(params ? cleanParams : genericParamKeyword)
+    .where("pokemon")
+    .equals("pokemon")
     .toArray();
 
-  console.log(data, category, params ? cleanParams : genericParamKeyword);
   if (data && data.length > 0) {
-    console.log(`HEY returned ${params} in ${category}`);
-    return data[0];
+    return JSON.parse(data[0].data);
   }
   return null;
 };

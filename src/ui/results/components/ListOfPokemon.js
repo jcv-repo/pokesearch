@@ -12,6 +12,7 @@ export const ListOfPokemon = ({
   pageSize,
   loadMoreCallback,
   loadMoreMessage,
+  shouldInfiniteScroll,
   className = "",
 }) => {
   const loadMoreElement = useRef(null);
@@ -39,38 +40,47 @@ export const ListOfPokemon = ({
   };
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    if (shouldInfiniteScroll) {
+      window.addEventListener("scroll", handleScroll);
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+      };
+    }
   }, [pokemonData]);
 
   return (
-    <ul className={className}>
-      {queryResults.slice(0, resultsDataTargetSize).map((pokemon, index) => {
-        const isTheSameAsId = queryId === pokemon;
-        const shouldDisplayData = isLoadingPokemon
-          ? availableQuery.length > index
-          : true;
-        const data = pokemonData[pokemon];
+    <div className={className}>
+      <ul className="flex flex-wrap" aria-label="Search results" tabIndex="0">
+        {queryResults.slice(0, resultsDataTargetSize).map((pokemon, index) => {
+          const isTheSameAsId = queryId === pokemon;
+          const shouldDisplayData = isLoadingPokemon
+            ? availableQuery.length > index
+            : true;
+          const data = pokemonData[pokemon];
 
-        return (
-          <React.Fragment key={`pokemon-item-${pokemon}`}>
-            {!isTheSameAsId && (
-              <li className="basis-full sm:basis-6/12 mb-8">
-                <article>
-                  <PokemonItem pokemon={data} onClick={setIdCallback} />
-                </article>
-              </li>
-            )}
-          </React.Fragment>
-        );
-      })}
+          return (
+            <React.Fragment key={`pokemon-item-${pokemon}`}>
+              {!isTheSameAsId && (
+                <li className="basis-full sm:basis-6/12 mb-8">
+                  <article>
+                    <PokemonItem pokemon={data} onClick={setIdCallback} />
+                  </article>
+                </li>
+              )}
+            </React.Fragment>
+          );
+        })}
+      </ul>
       {!areQueryResultsCompleted && !isLoadingPokemon && (
-        <button onClick={loadMoreCallback} ref={loadMoreElement}>
+        <button
+          onClick={loadMoreCallback}
+          ref={loadMoreElement}
+          className="block px-6 py-2 mx-auto rounded-full bg-gradient-to-l 
+        from-secondary-two to-secondary-one text-on-secondary dark:from-dark-secondary-two dark:to-dark-secondary-one dark:text-dark-on-secondary font-roboto-condensed font-bold leading-4"
+        >
           {loadMoreMessage}
         </button>
       )}
-    </ul>
+    </div>
   );
 };

@@ -41,13 +41,18 @@ export const PokemonBox = ({
 
   return (
     <div className={className}>
-      <div ref={boxElement} className="flex flex-col sm:flex-row ">
+      <div
+        ref={boxElement}
+        aria-label={`${pokemon.name}'s biography`}
+        tabIndex="0"
+        className="flex flex-col sm:flex-row"
+      >
         <div id="close-charbox" onClick={onClose}></div>
         {isPokemonLoaded && (
           <>
             <div
               className="w-full p-4 h-96 mr-10 sm:grow-0 sm:shrink-0 sm:basis-60  md:basis-80 bg-gradient-to-b 
-  from-secondary-one to-secondary-two rounded-2xl"
+  from-secondary-one to-secondary-two dark:from-dark-secondary-one dark:to-dark-secondary-two rounded-2xl"
             >
               <div className="flex content-center items-center justify-center relative w-full h-full before:block before:absolute before:w-full before:h-full before:border-4 before:border-white before:border-solid before:rounded-2xl">
                 <img

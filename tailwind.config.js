@@ -1,7 +1,8 @@
 const plugin = require("tailwindcss/plugin");
 
 module.exports = {
-  content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  content: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
@@ -13,6 +14,14 @@ module.exports = {
         "on-secondary": "#ffffff",
         "tertiary-color": "#ffffff",
         "on-tertiary": "#333650",
+        "dark-primary-one": "#acf6a0",
+        "dark-primary-two": "#51f3ea",
+        "dark-on-primary": "#ffffff",
+        "dark-secondary-one": "#7b5dfa",
+        "dark-secondary-two": "#6e94f4",
+        "dark-on-secondary": "#ffffff",
+        "dark-tertiary-color": "#232323",
+        "dark-on-tertiary": "#e2e2e2",
         "type-normal": "#555555",
         "type-grass": "#62c66c",
         "type-fire": "#e0554c",

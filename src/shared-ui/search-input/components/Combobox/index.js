@@ -1,8 +1,13 @@
 // React
-import { useState } from "react";
+import { useEffect, useRef } from "react";
 import Select from "react-select";
 // Components
+import {
+  SelectContainer,
+  selectContainerStyles,
+} from "./components/SelectContainer";
 import { Control, controlStyles } from "./components/Control";
+import { Input } from "./components/Input";
 import {
   ValueContainer,
   valueContainerStyles,
@@ -16,8 +21,8 @@ import { Option, optionStyles } from "./components/Option";
 // Hooks
 import { useSuggestions } from "./hooks/useSuggestions";
 // Utils
+import { getFormattedValue } from "./utils/getFormattedValue";
 import { getSelectionInput } from "./utils/getSelectionInput";
-import { toTitleCase } from "#utils/toTitleCase";
 
 //
 //
@@ -41,7 +46,7 @@ export const Combobox = ({
   className = "",
 }) => {
   //
-  // Formatting
+  // Suggestions and formatting
   //
 
   //
@@ -50,13 +55,6 @@ export const Combobox = ({
   // many of this  is called every re-render when its the same every time but
   // using useEffect would case to show delayed updates, so.... todo
   //
-  //
-
-  const getFormattedValue = (category, match) => ({
-    match: toTitleCase(match),
-    category: toTitleCase(category),
-  });
-
   //
 
   const selection = isLoading
@@ -70,8 +68,6 @@ export const Combobox = ({
         ],
         []
       );
-
-  //
 
   const filteredOptions = options.filter((category) => {
     const catInSelection = selectedValues[category.name];
@@ -103,6 +99,22 @@ export const Combobox = ({
   }
 
   //
+  // Styles
+  //
+
+  const comboBoxElement = useRef(null);
+  const comboBoxHeight = useRef(null);
+
+  const customStyles = {
+    container: selectContainerStyles,
+    control: controlStyles,
+    placeholder: placeholderStyles,
+    valueContainer: valueContainerStyles,
+    menu: menuStyles,
+    option: optionStyles,
+  };
+
+  //
   // Callbacks
   //
 
@@ -111,16 +123,25 @@ export const Combobox = ({
   };
 
   //
-  // Styles
+  // useEffects
   //
 
-  const customStyles = {
-    control: controlStyles,
-    placeholder: placeholderStyles,
-    valueContainer: valueContainerStyles,
-    menu: menuStyles,
-    option: optionStyles,
-  };
+  useEffect(() => {
+    if (comboBoxElement.current === null) {
+      return;
+    }
+    if (comboBoxElement.current.controlRef === null) {
+      return;
+    }
+
+    comboBoxHeight.current = comboBoxElement.current.controlRef.offsetHeight;
+
+    console.log(comboBoxElement.current);
+  }, []);
+
+  //
+  //
+  //
 
   //
   //
@@ -144,12 +165,15 @@ export const Combobox = ({
         loadingMessage={() => loadingMessage || "Loading"}
         noOptionsMessage={() => noMatchesMessage || "No matches"}
         placeholder={placeholder || "Enter your text"}
-        selectProps={{ inputValue }}
+        selectProps={{ inputValue, comboBoxHeight }}
         styles={customStyles}
+        ref={comboBoxElement}
         components={{
           DropdownIndicator: () => null,
           IndicatorSeparator: () => null,
+          SelectContainer,
           Control,
+          Input,
           ValueContainer,
           MultiValueContainer,
           MultiValueLabel,

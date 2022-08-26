@@ -39,7 +39,7 @@ export const ModalAddType = ({
       isOpen={isOpen}
       toggle={toggle}
       title={"Add a type"}
-      description={"Add up to two Pokemon types"}
+      description={"Select up to two Pokemon types"}
       callback={applyChangesAndClose}
     >
       <ul className="flex flex-wrap content-center justify-center">
@@ -57,12 +57,8 @@ export const ModalAddType = ({
                 <PokemonTypeLabel
                   value={type}
                   id={id}
-                  className={`relative select-none ${
-                    isDisabled && "opacity-25"
-                  } ${
-                    isSelected &&
-                    "before:block before:absolute before:top-0 before:left-0 before:w-full before:h-full before:border-solid before:border-4   before:border-secondary-one before:rounded-full"
-                  }`}
+                  isDisabled={!isSelected}
+                  className={isDisabled && "opacity-25"}
                 />
                 <input
                   type="checkbox"

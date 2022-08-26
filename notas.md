@@ -77,21 +77,27 @@ fianal todo:
 * agregar el indexeo de pokemones como enlace a la descripcion del pokemon
 * cuando no quepan todos los criterios en el combobox, que salga un + y solo cuando se seleccionan...
 * hacer que el pokemonbox salga entremmedio de los resultados y no arriba
-* estilizar el boton de ver mas y infinite scrolling
+
+- estilizar el boton de ver mas y infinite scrolling
 
 - agregar una premuestra de resultados con los iconos cargando
 
-* mostrar un icono de ? (en 3d) cuando el pokemon no tenga imagen
+- -mostrar un icono de ? (en 3d) cuando el pokemon no tenga imagen
 
 - refactorizar la lógica para que no se buggee la aplicacion con los IDs
 
-* mostrar una apropiada pantalla de no-results
+- -mostrar una apropiada pantalla de no-results
+
 * revisar y hacer correctamente el overlay de la app (y que tenga botón de "retry")
-* arreglar el cache
+
+- arreglar el cache
+
 * hacer que la aplicación recuerde la última vista y lo que se dejó en el combobox si se cierra la pestaña
 * dark mode
+* motionless mode
 * intercambiar botones de results por links de verdad
 * agregar X en modal y pokemonbox
+* arreglar regresar pagina y ids
 
 then figma
 
@@ -102,3 +108,5 @@ bugs:
 - cuando se hace una busqueda que ya tiene resultados pero aún faltan, se muestran pkmns en lugar de todo ser placeholders
 - ctrl-z en el combobox no funciona
 - react-select sigue filtrando
+- la base de datos tiene la implementacion mas delirante imaginable (y se freezea cada vez que guarda algo despues de que va creciendo), refactorizar y hacer que sea por parte
+- hacer que las tabs modaladdability tengan su propio estado para mejorar rendimiento (necesito capturar refs de modales)

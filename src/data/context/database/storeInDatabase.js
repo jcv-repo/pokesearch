@@ -1,41 +1,37 @@
-import { database, genericParamKeyword } from "./db";
+import { database } from "./db";
 
-export const storeInDatabase = async (data, category, params = null) => {
+// please
+// fix
+
+// please
+// fix
+
+export const storeInDatabase = async (data) => {
   if (data === undefined) {
     throw new Error("Missed first argument, it must be the data to store");
   }
-  if (typeof category !== "string") {
-    if (category === undefined) {
-      throw new Error(
-        "Missed second argument, it must be a string with the corresponding data category"
-      );
-    } else {
-      throw new TypeError(`${category} is not a string`);
-    }
-  }
+  // if (!Array.isArray(categories)) {
+  //   if (categories === undefined) {
+  //     throw new Error(
+  //       "Missed second argument, it must be an array with all the categories you want to include from the data"
+  //     );
+  //   } else {
+  //     throw new TypeError(`${categories} is not an array`);
+  //   }
+  // }
 
-  // we will always override whatever is there for now
-  if (database.pokemonData) {
-    database.pokemonData.clear();
-  }
-
-  const cleanCategory = category.replaceAll("-", "");
-  const cleanParams = params ? params.replaceAll("-", "") : genericParamKeyword;
+  console.log(`Refresing database...`);
 
   database.pokemonData
-    .add({
-      [cleanCategory]: cleanParams,
-      data,
+    .put({
+      // ???????????????
+      pokemon: "pokemon",
+      data: JSON.stringify(data),
     })
     .then(() => {
-      console.log(`added ${params} in ${category}`);
-      // mommy milkers
+      console.log(`Database refreshed`);
     })
     .catch(() => {
-      console.error(
-        `Failed to add ${category}.${
-          params ? params : genericParamKeyword
-        } to the database`
-      );
+      console.error(`Failed to add to the database`);
     });
 };

@@ -26,7 +26,7 @@ export const PokemonItem = ({ pokemon = {}, onClick }) => {
       <div
         className={`flex content-center items-center justify-center w-20 h-20 sm:w-32 sm:h-32 rounded-2xl ${
           isPokemonLoaded
-            ? "bg-gradient-to-b from-primary-one to-primary-two"
+            ? "bg-gradient-to-b from-primary-one to-primary-two dark:from-dark-primary-one dark:to-dark-primary-two"
             : "bg-slate-200"
         }`}
       >

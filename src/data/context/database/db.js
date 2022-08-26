@@ -1,7 +1,6 @@
 import Dexie from "dexie";
 
 const database = new Dexie("PokemonDB");
-const genericParamKeyword = "all";
 
 const createDatabase = (initialCategories) => {
   if (!Array.isArray(initialCategories)) {
@@ -15,4 +14,4 @@ const createDatabase = (initialCategories) => {
   });
 };
 
-export { database, createDatabase, genericParamKeyword };
+export { database, createDatabase };

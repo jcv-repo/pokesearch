@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 export const AppOverlay = ({ appState }) => {
-  const timeCapBeforeDisplayingInfo = 10;
+  const timeCapBeforeDisplayingInfo = 2000;
   const [shouldShowInfo, setShouldShowInfo] = useState(false);
 
   useEffect(() => {
@@ -15,12 +15,22 @@ export const AppOverlay = ({ appState }) => {
 
     let waitSetMessage;
 
+    const doTimeout = () => {
+      waitSetMessage = setTimeout(() => {
+        setShouldShowInfo(true);
+      }, timeCapBeforeDisplayingInfo);
+      return waitSetMessage;
+    };
+
     switch (appState.status) {
       case "waiting":
-        waitSetMessage = setTimeout(() => {
-          setShouldShowInfo(true);
-        }, timeCapBeforeDisplayingInfo);
+        doTimeout();
+        break;
 
+      case "busy":
+        if (appState.shouldGiveUserConsent === true) {
+          doTimeout();
+        }
         break;
 
       case "error":

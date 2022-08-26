@@ -4,8 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useAppContext } from "#app/context";
 import { usePokemonDataContext } from "#data/context";
 // Components
-import { Combobox } from "./components/Combobox";
-import { AddButton } from "./components/AddButton";
+import { SearchBoxContainer } from "./components/SearchBoxContainer";
 // Hooks
 import { useModal } from "#components/modal/useModal";
 // Utils & helpers
@@ -14,8 +13,6 @@ import { getStateErrorMessageWithStatus } from "#app/helpers/getStateErrorMessag
 import { extractDataListLabels } from "#data/api/utils/extractDataListLabels";
 // Config
 import { config } from "./config";
-import { isQueryValid } from "./utils/isQueryValid";
-import { isSelectionValid } from "./utils/isSelectionValid";
 
 //
 //
@@ -194,28 +191,15 @@ export const SearchInput = ({
               "flex flex-row justify-center content-center grow-0 shrink-0 mx-4 sm:mx-0"
         }
       >
-        <div className="flex grow rounded-lg shadow">
-          <AddButton
-            options={config.addMenu}
-            callback={setModal}
-            isLoading={!isReady}
-            className="relative"
-          />
-          <Combobox
-            data={isReady ? categoryData.current : null}
-            options={config.categories}
-            inputValue={userInput.input}
-            inputCallback={setInput}
-            selectedValues={userInput.selected}
-            selectedCallback={setSelection}
-            isLoading={!isReady}
-            maxSuggestionCount={config.maxSuggestionCount}
-            placeholder={config.placeholderMessage}
-            loadingMessage={config.loadingMessage}
-            noMatchesMessage={config.noMatchesMessage}
-            className="w-full"
-          />
-        </div>
+        <SearchBoxContainer
+          config={config}
+          categoryData={categoryData}
+          userInput={userInput}
+          setInput={setInput}
+          setSelection={setSelection}
+          setModal={setModal}
+          isReady={isReady}
+        />
         <div
           className={`${
             direction === "column"
@@ -227,7 +211,7 @@ export const SearchInput = ({
             type="button"
             onClick={doQuery}
             className={`px-6 py-2 sm:mr-2 rounded-full bg-gradient-to-l 
-          from-primary-one to-primary-two font-roboto-condensed font-bold leading-4 text-black`}
+          from-primary-one to-primary-two dark:from-dark-primary-one dark:to-dark-primary-two font-roboto-condensed font-bold leading-4 text-black`}
           >
             Search
           </button>

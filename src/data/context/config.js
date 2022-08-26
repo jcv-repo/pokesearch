@@ -3,5 +3,7 @@ export const config = {
 
   shouldPreload: true,
 
+  intervalBeforeUpdateDatabase: 1000,
+
   listOfCategoryKeyword: "all",
 };

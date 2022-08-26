@@ -12,6 +12,8 @@ import { matchArrays } from "#utils/matchArrays";
 import { getStateErrorMessageWithStatus } from "#app/helpers/getStateErrorMessageWithStatus";
 import { extractDataListPokemonIDs } from "#data/api/utils/extractDataListPokemonIDs";
 import { getSpeciesFromPokemon } from "#data/api/utils/getSpeciesFromPokemon";
+// Config
+import { config } from "./config";
 
 //
 //
@@ -22,12 +24,6 @@ export const SearchResults = ({
   setSearchQuery,
   className = "",
 }) => {
-  //
-  // Configs
-  //
-
-  const pageSize = 8;
-
   //
   // useState declarations
   //
@@ -43,7 +39,7 @@ export const SearchResults = ({
     availableQuery: [],
     areQueryResultsCompleted: true,
   });
-  const { searchState, changeAppState } = useAppContext();
+  const { changeAppState } = useAppContext();
 
   //
   // Other variables
@@ -66,8 +62,6 @@ export const SearchResults = ({
         status: "error",
         message: getStateErrorMessageWithStatus(request.status),
       });
-
-      throw new Error(request.message);
     }
     return request.results;
   };
@@ -149,7 +143,7 @@ export const SearchResults = ({
     const currentDataSize = resultsData.availableQuery.length;
     const nextRequest = queryResults.results.slice(
       currentDataSize,
-      currentDataSize + pageSize
+      currentDataSize + config.pageSize
     );
 
     const request = await getRequest("pokemon", nextRequest);
@@ -218,7 +212,7 @@ export const SearchResults = ({
           message: "Fetching search results...",
         });
 
-        const initialRequest = queryResults.results.slice(0, pageSize);
+        const initialRequest = queryResults.results.slice(0, config.pageSize);
         const request = await getRequest("pokemon", initialRequest);
 
         initialRequest.forEach((pokemon, index) => {
@@ -283,36 +277,40 @@ export const SearchResults = ({
       <main>
         <section className={className}>
           {searchQuery.query ? (
-            queryResults.haveResults ? (
-              <>
-                {searchQuery.id && (
-                  <PokemonBox
-                    pokemon={resultsData.pokemon[searchQuery.id]}
-                    pokemonSpecies={resultsData.species[searchQuery.id]}
-                    onClose={setId}
-                    shouldScroll={true}
-                    className={"lg:w-10/12 lg:mx-auto mb-24"}
+            <>
+              {queryResults.haveResults === true && (
+                <>
+                  {searchQuery.id && (
+                    <PokemonBox
+                      pokemon={resultsData.pokemon[searchQuery.id]}
+                      pokemonSpecies={resultsData.species[searchQuery.id]}
+                      onClose={setId}
+                      shouldScroll={true}
+                      className={"lg:w-10/12 lg:mx-auto mb-24"}
+                    />
+                  )}
+                  <ListOfPokemon
+                    queryResults={queryResults.results}
+                    pokemonData={resultsData.pokemon}
+                    availableQuery={resultsData.availableQuery}
+                    isLoadingPokemon={isLoadingData.current.pokemon}
+                    areQueryResultsCompleted={
+                      resultsData.areQueryResultsCompleted
+                    }
+                    queryId={searchQuery.id}
+                    setIdCallback={setId}
+                    pageSize={config.pageSize}
+                    loadMoreCallback={loadMoreResults}
+                    loadMoreMessage={config.loadMoreButtonMessage}
+                    shouldInfiniteScroll={config.enableInfiniteScrolling}
+                    className="mb-8"
                   />
-                )}
-                <ListOfPokemon
-                  queryResults={queryResults.results}
-                  pokemonData={resultsData.pokemon}
-                  availableQuery={resultsData.availableQuery}
-                  isLoadingPokemon={isLoadingData.current.pokemon}
-                  areQueryResultsCompleted={
-                    resultsData.areQueryResultsCompleted
-                  }
-                  queryId={searchQuery.id}
-                  setIdCallback={setId}
-                  pageSize={pageSize}
-                  loadMoreCallback={loadMoreResults}
-                  loadMoreMessage="See more"
-                  className="flex flex-wrap"
-                />
-              </>
-            ) : (
-              "i think no results bro"
-            )
+                </>
+              )}
+              {queryResults.haveResults === false && (
+                <>{config.noResultsMessage}</>
+              )}
+            </>
           ) : (
             "No search has been made yet"
           )}

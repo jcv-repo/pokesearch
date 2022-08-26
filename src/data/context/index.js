@@ -43,38 +43,18 @@ const PokemonDataContextProvider = ({ children }) => {
     addToFetchState,
     removeFromFetchState,
   } = useFetching();
-  const isStoreRoutineBusy = useRef(false);
+
+  const storeRoutine = useRef({
+    isBusy: false,
+    updatedCategories: [],
+    timeoutRoutine: null,
+  });
+
   const firstSetup = useRef(true);
 
   //
   // Helpers
   //
-
-  const doStoreInDatabaseRoutine = async () => {
-    const fetching = getFetching();
-
-    if (fetching.length === 0) {
-      return;
-    }
-
-    if (!isStoreRoutineBusy.current) {
-      isStoreRoutineBusy.current = true;
-
-      const promises = await Promise.all(
-        fetching.map(({ promise }) => promise)
-      );
-
-      isStoreRoutineBusy.current = false;
-
-      const wasSuccessful = promises.every(({ ok }) => ok);
-
-      if (wasSuccessful) {
-        if (getFetching().length > 0) {
-          doStoreInDatabaseRoutine();
-        }
-      }
-    }
-  };
 
   const storeData = (data, category, params = null) => {
     pokemonData.current[category][params || config.listOfCategoryKeyword] =
@@ -85,36 +65,58 @@ const PokemonDataContextProvider = ({ children }) => {
   const isDataStored = (category, params) =>
     (params || config.listOfCategoryKeyword) in pokemonData.current[category];
 
-  const getData = (category, params) => {
-    //
-    //
-    //
-    // TODO
-    // Esta función hace el chequeo de si la info está cacheada en el objeto
-    // y obtener la info en la base de datos si no existe, claramente deberían
-    // ser cosas distintas porque abajo estoy cacheando el objeto pero sin querrer
-    // obtenerlo
-    //
-    //
-    //
+  const getData = (category, params) =>
+    pokemonData.current[category][params || config.listOfCategoryKeyword] ||
+    null;
 
-    return (
-      pokemonData.current[category][params || config.listOfCategoryKeyword] ||
-      null
-    );
+  const refreshDataFromDatabase = async () => {
+    const database = await getFromDatabase();
+    if (database !== null) {
+      pokemonData.current = database;
+      return true;
+    } else {
+      return false;
+    }
+  };
 
-    // const databaseRequest = await getFromDatabase(
-    //   category,
-    //   params || null
-    // );
+  const updateDatabase = () => {
+    storeInDatabase(pokemonData.current);
+  };
 
-    // if (databaseRequest) {
-    //   pokemonData.current[category][
-    //     params || config.listOfCategoryKeyword
-    //   ] = databaseRequest;
-    // }
+  const doStoreInDatabaseRoutine = async (lastCategoryUpdated) => {
+    const fetching = getFetching();
 
-    // return databaseRequest;
+    if (storeRoutine.current.isBusy || fetching.length === 0) {
+      return;
+    }
+
+    if (storeRoutine.current.timeoutRoutine !== null) {
+      clearTimeout(storeRoutine.current.timeoutRoutine);
+      storeRoutine.current.timeoutRoutine = null;
+    }
+
+    if (!storeRoutine.current.updatedCategories.includes(lastCategoryUpdated)) {
+      storeRoutine.current.updatedCategories.push(lastCategoryUpdated);
+    }
+
+    storeRoutine.current.isBusy = true;
+
+    const promises = await Promise.all(fetching.map(({ promise }) => promise));
+
+    storeRoutine.current.isBusy = false;
+
+    const wasSuccessful = promises.every(({ ok }) => ok);
+
+    if (wasSuccessful) {
+      if (getFetching().length === 0) {
+        storeRoutine.current.timeoutRoutine = setTimeout(() => {
+          updateDatabase();
+
+          storeRoutine.current.timeoutRoutine = null;
+          storeRoutine.current.updatedCategories = [];
+        }, config.intervalBeforeUpdateDatabase);
+      }
+    }
   };
 
   //
@@ -154,6 +156,8 @@ const PokemonDataContextProvider = ({ children }) => {
         : fetchAPI(category, params);
 
       addToFetchState(requestID, fetch);
+
+      doStoreInDatabaseRoutine(category);
 
       const results = await fetch;
 
@@ -204,8 +208,6 @@ const PokemonDataContextProvider = ({ children }) => {
       }
     }
 
-    doStoreInDatabaseRoutine();
-
     return getRequestObject({ status: lastFetchStatus, results: results });
   };
 
@@ -216,22 +218,13 @@ const PokemonDataContextProvider = ({ children }) => {
   if (firstSetup.current) {
     const initializeData = async () => {
       createDatabase(config.availableData);
+
+      await refreshDataFromDatabase();
+
       if (config.shouldPreload) {
         for (const category of config.availableData) {
-          //
-          //
-          // TODO
-          // En este instante se está cacheando en el Pokemon Data la info de
-          // database, uno por uno idealmente debería cargarse todo el objeto de una
-          //
-          // also hay que separar el getData en solo una función que cachea la cosa
-          //
-          //
-
-          getData(category);
-
           if (!isDataStored(category)) {
-            const data = await requestPokemonData(category);
+            await requestPokemonData(category);
           }
         }
         console.log("ok", pokemonData);
