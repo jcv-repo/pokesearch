@@ -47,7 +47,7 @@ export const AbilityCombobox = ({
             placeholder="Type an Ability"
             displayValue={() => userInput}
             onChange={(event) => setUserInput(event.target.value)}
-            className="focus:outline-none"
+            className="w-36 focus:outline-none"
           />
         </div>
         <Combobox.Options className="flex flex-row flex-wrap overflow-hidden absolute z-10 w-full py-2 rounded-b-xl bg-tertiary-color">

@@ -94,7 +94,9 @@ export const ListOfAbilities = ({
         return (
           <li
             key={`letter-group-${groupLabel}`}
-            ref={(element) => (letterGroupElements.current[index] = element)}
+            ref={(element) => {
+              letterGroupElements.current[index] = element;
+            }}
             aria-labelledby={titleID}
             className="mb-8 last:mb-0"
           >
@@ -112,7 +114,7 @@ export const ListOfAbilities = ({
                     setSelectedValues={setSelectedValues}
                     elementRef={isSelected ? selectedAbilityElement : null}
                     shouldScroll={shouldScroll}
-                    className={`basis-1/2 mb-1 }`}
+                    className={`basis-1/2 mb-1`}
                   />
                 );
               })}

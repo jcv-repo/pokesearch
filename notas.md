@@ -75,7 +75,9 @@ fianal todo:
 
 * revisar tabindex y accesibilidad
 * agregar el indexeo de pokemones como enlace a la descripcion del pokemon
-* cuando no quepan todos los criterios en el combobox, que salga un + y solo cuando se seleccionan...
+
+- cuando no quepan todos los criterios en el combobox, que salga un + y solo cuando se seleccionan...
+
 * hacer que el pokemonbox salga entremmedio de los resultados y no arriba
 
 - estilizar el boton de ver mas y infinite scrolling
@@ -109,4 +111,5 @@ bugs:
 - ctrl-z en el combobox no funciona
 - react-select sigue filtrando
 - la base de datos tiene la implementacion mas delirante imaginable (y se freezea cada vez que guarda algo despues de que va creciendo), refactorizar y hacer que sea por parte
-- hacer que las tabs modaladdability tengan su propio estado para mejorar rendimiento (necesito capturar refs de modales)
+- hacer que las tabs modaladdability tengan su propio estado para mejorar rendimiento (necesito capturar refs de modales) (TAMBIEN puedes encapsular dentro de un componente todo lo que está dentro del modal y capturar refs ahi)
+- si se reescala la ventana mientras el menu del combobox se está mostrando, no se reajusta el tamaño de la ventana

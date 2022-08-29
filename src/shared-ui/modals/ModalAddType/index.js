@@ -42,7 +42,7 @@ export const ModalAddType = ({
       description={"Select up to two Pokemon types"}
       callback={applyChangesAndClose}
     >
-      <ul className="flex flex-wrap content-center justify-center">
+      <ul className="flex flex-wrap">
         {dataList.map((type) => {
           const isSelected = selectedValues?.includes(type) || false;
           const isDisabled = selectedValues?.length > 1 && !isSelected;
@@ -51,7 +51,7 @@ export const ModalAddType = ({
             <li
               key={id}
               aria-labelledby={id}
-              className="flex grow-0 shrink-0 basis-4/12 content-center justify-center list-none mb-2"
+              className="flex basis-1/2 md:basis-4/12 justify-center mb-2 list-none"
             >
               <label>
                 <PokemonTypeLabel

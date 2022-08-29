@@ -26,7 +26,7 @@ export const SearchBoxContainer = ({
   //
 
   return (
-    <div className={`relative flex grow rounded-lg ${className}`}>
+    <div className={`relative z-10 flex grow rounded-lg ${className}`}>
       <AddButton
         options={config.addMenu}
         callback={setModal}

@@ -15,6 +15,6 @@ export const Option = ({ data, isFocused, ...props }) => (
     <span className={`inline-block mr-1 ${!isFocused && "text-slate-500"}`}>
       {data.category}
     </span>
-    <span>{data.match}</span>
+    <span>{data.match.replaceAll("-", " ")}</span>
   </components.Option>
 );

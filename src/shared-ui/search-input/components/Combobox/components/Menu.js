@@ -1,23 +1,33 @@
 import { components } from "react-select";
 
-export const menuStyles = ({ background, border, ...provided }, state) => ({
-  ...provided,
-  background: "transparent",
-  left: 0,
-  marginTop: `-${state.selectProps.selectProps.comboBoxHeight.current}px`,
-  paddingTop: `${state.selectProps.selectProps.comboBoxHeight.current}px`,
-  zIndex: -1,
-});
+export const menuStyles = (
+  { background, border, boxShadow, ...provided },
+  state
+) => {
+  const height =
+    state.selectProps.selectProps.containerElement.current.controlRef
+      .offsetHeight;
+  return {
+    ...provided,
+    background: "transparent",
+    left: 0,
+    marginTop: `-${height}px`,
+    marginBottom: 0,
+    paddingTop: `${height}px`,
+    zIndex: -1,
+  };
+};
 
-export const Menu = (props) => {
-  console.log(props.selectProps);
-  const comboboxHeight = props.selectProps.selectProps.comboBoxHeight.current;
+export const Menu = ({ children, ...props }) => {
+  const isInputValueEmpty = props.selectProps.inputValue.trim().length === 0;
 
-  return props.selectProps.inputValue.length > 0 ? (
+  return !isInputValueEmpty ? (
     <components.Menu
       {...props}
-      className="font-roboto-condensed before:block before:absolute before:top-0 before:z-0 before:w-full before:h-full before:rounded-lg before:shadow before:bg-white"
-    />
+      className="font-roboto-condensed before:block before:absolute before:top-0 before:z-0 before:w-full before:h-full before:rounded-lg before:shadow-combobox before:bg-white"
+    >
+      {children}
+    </components.Menu>
   ) : (
     <></>
   );

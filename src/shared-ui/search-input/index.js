@@ -5,6 +5,7 @@ import { useAppContext } from "#app/context";
 import { usePokemonDataContext } from "#data/context";
 // Components
 import { SearchBoxContainer } from "./components/SearchBoxContainer";
+import { SearchButton } from "./components/SearchButton";
 // Hooks
 import { useModal } from "#components/modal/useModal";
 // Utils & helpers
@@ -204,17 +205,14 @@ export const SearchInput = ({
           className={`${
             direction === "column"
               ? "inline-block text-center mt-4"
-              : direction === "row" && "mt-2 ml-4 "
+              : direction === "row" && "mt-1.5 ml-2 "
           }`}
         >
-          <button
-            type="button"
+          <SearchButton
             onClick={doQuery}
-            className={`px-6 py-2 sm:mr-2 rounded-full bg-gradient-to-l 
-          from-primary-one to-primary-two dark:from-dark-primary-one dark:to-dark-primary-two font-roboto-condensed font-bold leading-4 text-black`}
-          >
-            Search
-          </button>
+            showIcon={direction === "row"}
+            message={direction === "column" ? "Search" : ""}
+          />
         </div>
       </div>
     </div>
