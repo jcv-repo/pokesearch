@@ -5,7 +5,6 @@ export const multiValueStyles = ({ backgroundColor, margin, ...provided }) => ({
   provided,
 });
 
-console.log("redraw");
 export const MultiValue = (props) => {
   // never ask ra men hs salirty
   // never ask a gilr her age

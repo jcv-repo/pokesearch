@@ -2,18 +2,26 @@ const plugin = require("tailwindcss/plugin");
 
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
-  darkMode: "class",
   theme: {
+    screens: {
+      sm: "640px",
+      md: "840px",
+      lg: "980px",
+      xl: "1180px",
+    },
     extend: {
       colors: {
+        button: "#b9bed1",
+        "on-button": "#ffffff",
         "primary-one": "#acf6a0",
         "primary-two": "#51f3ea",
         "on-primary": "#ffffff",
         "secondary-one": "#6e94f4",
         "secondary-two": "#7b5dfa",
         "on-secondary": "#ffffff",
-        "tertiary-color": "#ffffff",
-        "on-tertiary": "#333650",
+        "tertiary-one": "#ffffff",
+        "tertiary-two": "#f5f6f9",
+        "on-tertiary": "#363636",
         "dark-primary-one": "#acf6a0",
         "dark-primary-two": "#51f3ea",
         "dark-on-primary": "#ffffff",
@@ -58,6 +66,10 @@ module.exports = {
     },
   },
   safelist: [
+    "bg-button",
+    "text-on-button",
+    "fill-secondary-one",
+    "bg-tertiary-two",
     "bg-type-normal",
     "bg-type-grass",
     "bg-type-fire",

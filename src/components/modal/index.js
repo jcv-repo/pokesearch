@@ -1,5 +1,6 @@
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { Button } from "#components/button";
 
 export const Modal = ({
   children,
@@ -13,7 +14,7 @@ export const Modal = ({
   showCancelButton = true,
 }) => (
   <Transition appear show={isOpen} as={Fragment}>
-    <Dialog as="div" onClose={toggle} className="relative z-10">
+    <Dialog as="div" onClose={toggle} className="relative z-20">
       <Transition.Child
         as={Fragment}
         enter="ease-out duration-300"
@@ -60,40 +61,31 @@ export const Modal = ({
 
               <div
                 className={`flex flex-col grow justify-center mb-4 ${
-                  shouldContentScroll ? "overflow-scroll" : "overflow-hidden"
+                  shouldContentScroll
+                    ? "" /* overflow-scroll*/
+                    : "overflow-hidden"
                 }`}
               >
                 {children}
               </div>
 
               {(showCancelButton || showDoneButton) && (
-                <div className="flex flex-row justify-center ml-auto">
+                <div className="flex flex-row justify-center">
                   {showCancelButton && (
-                    <button
-                      type="button"
+                    <Button
+                      message="Cancel"
                       onClick={toggle}
-                      className="inline-block px-4 py-2 mr-2 rounded-md border 
-                          border-transparent bg-blue-100 text-sm font-medium 
-                          text-blue-900 hover:bg-blue-200 focus:outline-none 
-                          focus-visible:ring-2 focus-visible:ring-blue-500 
-                          focus-visible:ring-offset-2"
-                    >
-                      Cancel
-                    </button>
+                      className="mr-2"
+                    />
                   )}
 
                   {showDoneButton && (
-                    <button
-                      type="button"
+                    <Button
+                      message="Done"
                       onClick={callback}
-                      className="inline-block px-4 py-2 rounded-md border 
-                          border-transparent bg-blue-100 text-sm font-medium 
-                          text-blue-900 hover:bg-blue-200 focus:outline-none 
-                          focus-visible:ring-2 focus-visible:ring-blue-500 
-                          focus-visible:ring-offset-2"
-                    >
-                      Done
-                    </button>
+                      className="bg-gradient-to-l 
+                      from-primary-one to-primary-two dark:from-dark-primary-one dark:to-dark-primary-two"
+                    />
                   )}
                 </div>
               )}

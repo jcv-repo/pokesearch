@@ -24,7 +24,7 @@ export const Menu = ({ children, ...props }) => {
   return !isInputValueEmpty ? (
     <components.Menu
       {...props}
-      className="font-roboto-condensed before:block before:absolute before:top-0 before:z-0 before:w-full before:h-full before:rounded-lg before:shadow-combobox before:bg-white"
+      className="font-roboto-condensed before:block before:absolute before:top-0 before:z-0 before:w-full before:h-full before:rounded-lg before:bg-tertiary-two before:shadow-combobox"
     >
       {children}
     </components.Menu>

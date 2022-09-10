@@ -203,7 +203,10 @@ export const Combobox = ({
     valueContainer: valueContainerStyles,
     multiValue: multiValueContainerStyles,
     multiValueRemove: multiValueRemoveStyles,
-    clearIndicator: (provided) => ({ ...provided, cursor: "pointer" }),
+    clearIndicator: (provided) => ({
+      ...provided,
+      cursor: "pointer",
+    }),
     menu: menuStyles,
     menuList: menuListStyles,
     option: optionStyles,
@@ -263,7 +266,6 @@ export const Combobox = ({
         }}
         components={{
           DropdownIndicator: () => null,
-          IndicatorSeparator: () => null,
           SelectContainer,
           Control,
           Input,

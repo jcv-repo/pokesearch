@@ -1,19 +1,23 @@
 import { PokemonTypeLabel } from "#components/pokemon/type";
 import { toTitleCase } from "#utils/toTitleCase";
+import { getPokedexIndexFromPokemon } from "#data/api/utils/getPokedexIndexFromPokemon";
 import missingSprite from "#assets/images/missingno.png";
 
-export const PokemonItem = ({ pokemon = {}, onClick }) => {
+export const PokemonItem = ({ pokemon = {}, active = false, onClick }) => {
   const callback = () => {
     onClick(pokemon.name);
   };
 
   const isPokemonLoaded = pokemon && pokemon.name !== undefined;
-  let pokemonName, pokemonSprite, titleID;
+  let pokemonName, pokemonSprite, titleID, pokedexIndex;
 
   if (isPokemonLoaded) {
     pokemonName = toTitleCase(pokemon.name).replaceAll("-", " ");
     pokemonSprite = pokemon.sprites.front_default || missingSprite;
     titleID = `pokemon-name-${pokemon.name}`;
+    pokedexIndex = `#${("000" + getPokedexIndexFromPokemon(pokemon)).slice(
+      -3
+    )}`;
   }
 
   return (
@@ -21,16 +25,19 @@ export const PokemonItem = ({ pokemon = {}, onClick }) => {
       onClick={callback}
       role="link"
       aria-labelledby={titleID}
-      className="flex items-center w-full 2space-x-6 md:space-x-8 text-left"
+      className={`relative flex items-center w-full p-2 rounded-2xl text-left bg-tertiary-one ${
+        active &&
+        "before:block before:absolute before:left-0 before:w-full before:h-full before:border-4 before:border-secondary-two before:rounded-2xl"
+      }`}
     >
       <div
-        className={`flex content-center items-center justify-center w-20 h-20 sm:w-32 sm:h-32 rounded-2xl ${
+        className={`flex content-center items-center justify-center w-24 h-24 mr-4 rounded-xl ${
           isPokemonLoaded
             ? "bg-gradient-to-b from-primary-one to-primary-two dark:from-dark-primary-one dark:to-dark-primary-two"
             : "bg-slate-200"
         }`}
       >
-        <div className="relative flex content-center items-center justify-center w-16 h-16 sm:w-24 sm:h-24 before:block before:absolute before:w-full before:h-full before:border-4 before:border-white before:border-solid before:rounded-2xl">
+        <div className="relative flex content-center items-center justify-center w-full h-full sm:w-24 sm:h-24">
           {isPokemonLoaded && (
             <img
               src={pokemonSprite}
@@ -44,17 +51,12 @@ export const PokemonItem = ({ pokemon = {}, onClick }) => {
       <div>
         {isPokemonLoaded ? (
           <>
-            <h3 className="text-2xl md:text-4xl font mb-1" id={titleID}>
+            <h3 className="text-2xl mb-1" id={titleID}>
+              <div className="text-xs">{pokedexIndex}</div>
               {pokemonName}
-              <span className="inline-block align-middle ml-2 text-base">
-                #{pokemon.id}
-              </span>
             </h3>
 
             <div className="flex sm:flex-wrap lg:flex-nowrap items-center">
-              <div className="mr-2 sm:w-full sm:mr-0 lg:w-auto lg:mr-2">
-                Type
-              </div>
               {pokemon.types.map(({ type }, index) => (
                 <div className="mr-2" key={`type-${index}`}>
                   <PokemonTypeLabel value={type.name} />

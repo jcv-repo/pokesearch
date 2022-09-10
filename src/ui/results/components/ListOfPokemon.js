@@ -1,10 +1,12 @@
 import React, { useRef, useEffect } from "react";
 import { PokemonItem } from "./PokemonItem";
+import { matchArrays } from "#utils/matchArrays";
 
 export const ListOfPokemon = ({
   queryResults,
   pokemonData,
   availableQuery,
+  currentPage,
   isLoadingPokemon,
   areQueryResultsCompleted,
   queryId,
@@ -13,12 +15,20 @@ export const ListOfPokemon = ({
   loadMoreCallback,
   loadMoreMessage,
   shouldInfiniteScroll,
-  className = "",
 }) => {
+  //
+  // Refs & constants
+  //
+
   const loadMoreElement = useRef(null);
   const resultsDataTargetSize = isLoadingPokemon
-    ? availableQuery.length + pageSize
-    : availableQuery.length;
+    ? currentPage * pageSize + pageSize
+    : currentPage * pageSize;
+  const containerElement = useRef(null);
+
+  //
+  // Callbacks
+  //
 
   const handleScroll = () => {
     window.requestAnimationFrame(() => {
@@ -39,35 +49,69 @@ export const ListOfPokemon = ({
     });
   };
 
+  //
+  // useEffects
+  //
+
   useEffect(() => {
     if (shouldInfiniteScroll) {
       window.addEventListener("scroll", handleScroll);
-      return () => {
-        window.removeEventListener("scroll", handleScroll);
-      };
+      if (containerElement.current !== null) {
+        containerElement.current.addEventListener("scroll", handleScroll);
+      }
     }
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (containerElement.current !== null) {
+        containerElement.current.removeEventListener("scroll", handleScroll);
+      }
+    };
   }, [pokemonData]);
 
+  //
+  //
+  //
+
+  //
+  //
+  //
+
   return (
-    <div className={className}>
-      <ul className="flex flex-wrap" aria-label="Search results" tabIndex="0">
+    <div
+      className={`${
+        queryId ? "sm:w-1/2" : "lg:overflow-y-visible"
+      } sm:overflow-y-scroll xl:overflow-y-visible xl:relative xl:z-10 lg:w-2/3 lg:pr-2`}
+      ref={containerElement}
+    >
+      <ul
+        className="flex flex-wrap first:mt-4"
+        aria-label="Search results"
+        tabIndex="0"
+      >
         {queryResults.slice(0, resultsDataTargetSize).map((pokemon, index) => {
           const isTheSameAsId = queryId === pokemon;
           const shouldDisplayData = isLoadingPokemon
             ? availableQuery.length > index
             : true;
           const data = pokemonData[pokemon];
+          const keyName = `pokemon-item-${pokemon}`;
 
           return (
-            <React.Fragment key={`pokemon-item-${pokemon}`}>
-              {!isTheSameAsId && (
-                <li className="basis-full sm:basis-6/12 mb-8">
-                  <article>
-                    <PokemonItem pokemon={data} onClick={setIdCallback} />
-                  </article>
-                </li>
-              )}
-            </React.Fragment>
+            <li
+              key={keyName}
+              className={`${
+                queryId ? "" : "sm:basis-1/2 sm:odd:pr-2 sm:even:pl-2"
+              } basis-full lg:basis-1/2 lg:odd:pr-2 lg:even:pl-2 mb-4`}
+            >
+              <article>
+                <PokemonItem
+                  pokemon={data}
+                  active={isTheSameAsId}
+                  onClick={setIdCallback}
+                />
+              </article>
+            </li>
           );
         })}
       </ul>

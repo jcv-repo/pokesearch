@@ -45,7 +45,6 @@ code {
 html,
 body,
 #app,
-#app > div,
 #root {
   height: 100%;
 }

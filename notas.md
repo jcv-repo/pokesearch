@@ -113,3 +113,9 @@ bugs:
 - la base de datos tiene la implementacion mas delirante imaginable (y se freezea cada vez que guarda algo despues de que va creciendo), refactorizar y hacer que sea por parte
 - hacer que las tabs modaladdability tengan su propio estado para mejorar rendimiento (necesito capturar refs de modales) (TAMBIEN puedes encapsular dentro de un componente todo lo que está dentro del modal y capturar refs ahi)
 - si se reescala la ventana mientras el menu del combobox se está mostrando, no se reajusta el tamaño de la ventana
+
+pokemonbox necesita tener su propio section
+cuando en landscape mobile se saca el pokemon box, los resultados deben volver al scroll donde estaba
+el combobox de modaladdtype no reacciona al mouse
+se están refetcheando pokemones que ya fueron fetcheado, en particular los que ya estaban por el ID
+combinar loadMoreResults y findQueryResults porque son redudantes

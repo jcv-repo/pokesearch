@@ -59,18 +59,13 @@ export const SearchForm = () => {
   //
 
   return (
-    <div id="container" className="min-h-full">
+    <div id="container" className="h-px lg:h-auto min-h-full">
       {!searchQuery.query ? (
-        <Home
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          className="flex flex-col justify-center content-center h-screen mx-4"
-        />
+        <Home searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       ) : (
         <SearchResults
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
-          className="mt-8 mx-4 md:mx-8 lg:mx-32"
         />
       )}
     </div>

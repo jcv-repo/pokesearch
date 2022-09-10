@@ -1,6 +1,6 @@
 import { components } from "react-select";
 
-export const controlStyles = (provided, state) => ({
+export const controlStyles = ({ backgroundColor, ...provided }, state) => ({
   ...provided,
   border: 0,
   boxShadow: "none",

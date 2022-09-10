@@ -22,7 +22,7 @@ export const SearchButton = ({ onClick, showIcon = false, message = "" }) => {
           className={`inline-block ${hasBothIconAndMessage && "w-6 pr-2"}`}
         />
       )}
-      {hasMessage && <span className="inline-block ">{message}</span>}
+      {hasMessage && <span className="inline-block">{message}</span>}
     </button>
   );
 };

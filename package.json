@@ -25,6 +25,7 @@
     "deploy": "gh-pages -d build"
   },
   "imports": {
+    "#src/*": "./src/*",
     "#app/*": "./src/app/*",
     "#assets/*": "./src/assets/*",
     "#components/*": "./src/components/*",

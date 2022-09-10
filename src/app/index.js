@@ -48,7 +48,7 @@ export const AppOverlay = ({ appState }) => {
       {shouldShowInfo === true && appState.status !== "ready" && (
         <div
           id="status-overlay"
-          className="fixed left-1/2 bottom-4 transform translate-x-[-50%] z-40 px-4 py-2 rounded-md bg-on-tertiary text-tertiary-color"
+          className="fixed left-1/2 bottom-4 transform translate-x-[-50%] z-40 px-4 py-2 rounded-md bg-on-tertiary text-tertiary-one"
         >
           <div className="bottom-4 mx-auto">{appState.message}</div>
         </div>

@@ -19,11 +19,7 @@ import { config } from "./config";
 //
 //
 
-export const SearchResults = ({
-  searchQuery,
-  setSearchQuery,
-  className = "",
-}) => {
+export const SearchResults = ({ searchQuery, setSearchQuery }) => {
   //
   // useState declarations
   //
@@ -45,8 +41,9 @@ export const SearchResults = ({
   // Other variables
   //
 
-  const isLoadingData = useRef({ pokemon: false, species: false });
   const requestPokemonData = usePokemonDataContext();
+  const isLoadingData = useRef({ pokemon: false, species: false });
+  const lastPageLoaded = useRef(0);
 
   //
   // Utils
@@ -117,7 +114,7 @@ export const SearchResults = ({
   //
 
   const setId = (id) => {
-    setSearchQuery({ query: searchQuery.query, id: id });
+    setSearchQuery({ query: searchQuery.query, id: id || null });
   };
 
   const loadMoreResults = async () => {
@@ -140,10 +137,10 @@ export const SearchResults = ({
     });
 
     const results = {};
-    const currentDataSize = resultsData.availableQuery.length;
+    const currentPageSize = lastPageLoaded.current * config.pageSize;
     const nextRequest = queryResults.results.slice(
-      currentDataSize,
-      currentDataSize + config.pageSize
+      currentPageSize,
+      currentPageSize + config.pageSize
     );
 
     const request = await getRequest("pokemon", nextRequest);
@@ -152,6 +149,7 @@ export const SearchResults = ({
     });
 
     changeAppState({ status: "ready" });
+    lastPageLoaded.current += 1;
     setData({ pokemon: results }, { pokemon: true });
   };
 
@@ -222,7 +220,8 @@ export const SearchResults = ({
         changeAppState({ status: "ready" });
       }
 
-      setData({ pokemon: results });
+      lastPageLoaded.current = 1;
+      setData({ pokemon: results }, { pokemon: true });
     };
 
     updatePokemonData();
@@ -267,32 +266,40 @@ export const SearchResults = ({
   //
   //
 
+  console.log(queryResults.haveResults, lastPageLoaded.current);
   return (
     <>
-      <Header
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        className="mb-4"
-      />
-      <main>
-        <section className={className}>
+      <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <main
+        className={`block ${
+          searchQuery.id
+            ? "sm:overflow-hidden sm:h-[100vh]"
+            : "lg:overflow-visible lg:h-auto"
+        } xl:overflow-visible xl:h-full min-h-[inherit] lg:min-h-[100vh] pt-[6.5rem] sm:pt-16 xl:pt-20 bg-tertiary-two`}
+      >
+        <section className="sm:h-full xl:w-[1180px] px-2 md:px-4 xl:px-0 xl:mx-auto">
           {searchQuery.query ? (
             <>
               {queryResults.haveResults === true && (
-                <>
+                <div
+                  className={
+                    searchQuery.id &&
+                    "sm:flex sm:flex-row-reverse xl:flex-row sm:h-full"
+                  }
+                >
                   {searchQuery.id && (
                     <PokemonBox
                       pokemon={resultsData.pokemon[searchQuery.id]}
                       pokemonSpecies={resultsData.species[searchQuery.id]}
-                      onClose={setId}
-                      shouldScroll={true}
-                      className={"lg:w-10/12 lg:mx-auto mb-24"}
+                      setIdCallback={setId}
+                      shouldScroll={false}
                     />
                   )}
                   <ListOfPokemon
                     queryResults={queryResults.results}
                     pokemonData={resultsData.pokemon}
                     availableQuery={resultsData.availableQuery}
+                    currentPage={lastPageLoaded.current}
                     isLoadingPokemon={isLoadingData.current.pokemon}
                     areQueryResultsCompleted={
                       resultsData.areQueryResultsCompleted
@@ -303,9 +310,8 @@ export const SearchResults = ({
                     loadMoreCallback={loadMoreResults}
                     loadMoreMessage={config.loadMoreButtonMessage}
                     shouldInfiniteScroll={config.enableInfiniteScrolling}
-                    className="mb-8"
                   />
-                </>
+                </div>
               )}
               {queryResults.haveResults === false && (
                 <>{config.noResultsMessage}</>

@@ -1,8 +1,12 @@
 import logoSrc from "#assets/images/pokesearch-logo.png";
+import miniSrc from "#assets/images/pokesearch-mini.png";
 
-const Logo = ({ className = "" }) => (
-  <div>
-    <img src={logoSrc} alt="Pokesearch" className={className} />
-  </div>
-);
-export default Logo;
+export const Logo = ({ showMini = false, className = "" }) => {
+  return (
+    <img
+      src={showMini ? miniSrc : logoSrc}
+      alt="Pokesearch"
+      className={className}
+    />
+  );
+};

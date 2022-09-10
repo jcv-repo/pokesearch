@@ -6,6 +6,10 @@ import { usePokemonDataContext } from "#data/context";
 // Components
 import { SearchBoxContainer } from "./components/SearchBoxContainer";
 import { SearchButton } from "./components/SearchButton";
+import { Button } from "#components/button";
+import { Combobox } from "./components/Combobox";
+import { AddButton } from "./components/AddButton";
+import { SearchIcon } from "./components/SearchIcon";
 // Hooks
 import { useModal } from "#components/modal/useModal";
 // Utils & helpers
@@ -23,6 +27,8 @@ export const SearchInput = ({
   searchQuery,
   setSearchQuery,
   direction,
+  showButtonMessage = true,
+  showButtonIcon = false,
   className = "",
 }) => {
   //
@@ -189,31 +195,47 @@ export const SearchInput = ({
           direction === "column"
             ? "flex flex-col justify-center content-center"
             : direction === "row" &&
-              "flex flex-row justify-center content-center grow-0 shrink-0 mx-4 sm:mx-0"
+              "flex flex-row justify-center content-center grow-0 shrink-0"
         }
       >
-        <SearchBoxContainer
-          config={config}
-          categoryData={categoryData}
-          userInput={userInput}
-          setInput={setInput}
-          setSelection={setSelection}
-          setModal={setModal}
-          isReady={isReady}
-        />
-        <div
+        <div className="relative z-10 flex grow sm:w-4/5 rounded-lg">
+          <AddButton
+            options={config.addMenu}
+            callback={setModal}
+            isLoading={!isReady}
+            className="relative"
+          />
+          <Combobox
+            data={isReady ? categoryData.current : null}
+            options={config.categories}
+            inputValue={userInput.input}
+            inputCallback={setInput}
+            selectedValues={userInput.selected}
+            selectedCallback={setSelection}
+            isLoading={!isReady}
+            maxSuggestionCount={config.maxSuggestionCount}
+            placeholder={config.placeholderMessage}
+            loadingMessage={config.loadingMessage}
+            noMatchesMessage={config.noMatchesMessage}
+            className="w-full"
+          />
+          <SearchIcon onClick={doQuery} className="" />
+        </div>
+
+        {/* <div
           className={`${
             direction === "column"
               ? "inline-block text-center mt-4"
-              : direction === "row" && "mt-1.5 ml-2 "
+              : direction === "row" && "flex items-center sm:w-1/5"
           }`}
         >
-          <SearchButton
+          <Button
+            message={showButtonMessage && "Search"}
             onClick={doQuery}
-            showIcon={direction === "row"}
-            message={direction === "column" ? "Search" : ""}
+            IconComponent={SearchIcon}
+            className="bg-gradient-to-l from-primary-one to-primary-two dark:from-dark-primary-one dark:to-dark-primary-two"
           />
-        </div>
+        </div> */}
       </div>
     </div>
   );
